@@ -26,15 +26,15 @@ namespace InformaticaWSH
             return sessionId;
         }
 
-        public async Task<string> GetWorkflowLog(string sessionId, string folderName, string workflowName, int workflowRunId, int timeout = 60)
+        public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, string folderName, string workflowName, int workflowRunId, int timeout = 60)
         {
             var result = await executor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowLogTemplate(sessionId, folderName, workflowName, workflowRunId, _serviceInfo, timeout));
-            return ValuesSoapXml.GetValueOnElement(result, "Buffer");
+            return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
-        public async Task<string> GetSessionLog(string sessionId, string folderName, string workflowName, string taskInstancePath, int timeout = 60)
+        public async Task<List<LogMessage>> GetSessionLog(string sessionId, string folderName, string workflowName, string taskInstancePath, int timeout = 60)
         {
             var result = await executor.ExecuteRequest(InformaticaWebRequestsTemplates.GetSessionLogTemplate(sessionId, folderName, workflowName,taskInstancePath, _serviceInfo, timeout));
-            return ValuesSoapXml.GetValueOnElement(result, "Buffer");
+            return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
 
         public async Task Logout(string sessionId)

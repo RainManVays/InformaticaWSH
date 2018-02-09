@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 namespace InformaticaWSH
 {
-   public class InfaLogParser
+   internal class InfaLogParser
     {
-        public static List<LogMessage> ParseWorkflowLogs(string log)
+        internal static List<LogMessage> ParseWorkflowLogs(string log)
         {
             string[] splitValues = { "INFO", "ERROR", "FATAL", "WARNING", "TRACE", "DEBUG" };
 

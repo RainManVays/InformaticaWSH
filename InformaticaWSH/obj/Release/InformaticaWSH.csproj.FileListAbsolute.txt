@@ -1,0 +1,6 @@
+C:\Users\LDF\Documents\GIT\InformaticaWSH\InformaticaWSH\bin\Release\InformaticaWSH.dll
+C:\Users\LDF\Documents\GIT\InformaticaWSH\InformaticaWSH\bin\Release\InformaticaWSH.pdb
+C:\Users\LDF\Documents\GIT\InformaticaWSH\InformaticaWSH\obj\Release\InformaticaWSH.csproj.CoreCompileInputs.cache
+C:\Users\LDF\Documents\GIT\InformaticaWSH\InformaticaWSH\obj\Release\InformaticaWSH.dll
+C:\Users\LDF\Documents\GIT\InformaticaWSH\InformaticaWSH\obj\Release\InformaticaWSH.pdb
+C:\Users\LDF\Documents\GIT\InformaticaWSH\InformaticaWSH\obj\Release\InformaticaWSH.csprojResolveAssemblyReference.cache

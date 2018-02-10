@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Collections.Generic;
+using System.Xml;
 
 namespace InformaticaWSH
 {
@@ -19,7 +20,7 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header/>" +
-                    "<soap:Body xmlns:ns0=\"http://www.informatica.com/wsh\">" +
+                    "<soap:Body xmlns:ns0="+_informaticaWshLink+"> " +
                     "<ns0:Login>" +
                      "<RepositoryDomainName>"+ domain + "</RepositoryDomainName>" +
                      "<RepositoryName>"+ repository + "</RepositoryName>" +
@@ -36,12 +37,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:Logout xmlns:ns0 = \"http://www.informatica.com/wsh\"/>" +
+                      "<ns0:Logout xmlns:ns0 = "+_informaticaWshLink+"/>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
@@ -52,12 +53,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">"+
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">"+
                       "<SessionId>"+ sessionId + " </SessionId>"+
                       "</ns0:Context>"+
                        "</soap:Header>"+
                        "<soap:Body>"+
-                      "<ns0:GetAllFolders xmlns:ns0 = \"http://www.informatica.com/wsh\"/>" +
+                      "<ns0:GetAllFolders xmlns:ns0 = "+_informaticaWshLink+"/>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
@@ -68,7 +69,7 @@ namespace InformaticaWSH
             template.LoadXml(_envelopeHeader +
                    "<soap:Header/>" +
                      "<soap:Body>" +
-                      "<ns0:GetAllRepositories xmlns:ns0 = \"http://www.informatica.com/wsh\"/>" +
+                      "<ns0:GetAllRepositories xmlns:ns0 = "+_informaticaWshLink+"/>" +
                      "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
@@ -78,12 +79,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>"+ folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -95,12 +96,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + "</SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                        "<ns0:GetWorkflowLog xmlns:ns0=\"http://www.informatica.com/wsh\">"+
+                        "<ns0:GetWorkflowLog xmlns:ns0="+_informaticaWshLink+">"+
                          ConvertDiServiceInfoToXMLText(serviceInfo) +
                          "<FolderName>" +folderName+"</FolderName>" +
                          "<WorkflowName>" +workflowName+"</WorkflowName>" +
@@ -117,12 +118,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + "</SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                        "<ns0:GetWorkflowLog xmlns:ns0=\"http://www.informatica.com/wsh\">" +
+                        "<ns0:GetWorkflowLog xmlns:ns0="+_informaticaWshLink+">" +
                          ConvertDiServiceInfoToXMLText(serviceInfo) +
                          "<FolderName>" + folderName + "</FolderName>" +
                          "<WorkflowName>" + workflowName + "</WorkflowName>" +
@@ -139,12 +140,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + "</SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                        "<ns0:GetSessionLog xmlns:ns0=\"http://www.informatica.com/wsh\">" +
+                        "<ns0:GetSessionLog xmlns:ns0="+_informaticaWshLink+">" +
                          ConvertDiServiceInfoToXMLText(serviceInfo) +
                          "<FolderName>" + folderName + "</FolderName>" +
                          "<WorkflowName>" + workflowName + "</WorkflowName>" +
@@ -161,99 +162,140 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
-                      "<Name>" + folderName + "</Name>" +
-                      "</ns0:GetAllWorkflows>" +
+                      "<ns0:DeinitializeDIServerConnection  xmlns:ns0 = " + _informaticaWshLink+"/>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetDIServerPropTemplate(string sessionId, string folderName)
+        internal static XmlDocument GetDIServerPropTemplate(string sessionId,DIServiceInfo serviceInfo)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
-                      "<Name>" + folderName + "</Name>" +
-                      "</ns0:GetAllWorkflows>" +
+                      "<ns0:GetDIServerProperties  xmlns:ns0 = " + _informaticaWshLink+">" +
+                      "<DomainName>"+ serviceInfo.DomainName+ "</DomainName>"+
+                      "<ServiceName>"+serviceInfo.ServiceName+"</ServiceName>" +
+                      "</ns0:GetDIServerProperties>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetNextLogSegmentTemplate(string sessionId, string folderName)
+        internal static XmlDocument GetNextLogSegmentTemplate(string sessionId,int logHandle,int timeOut=60 )
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
-                      "<Name>" + folderName + "</Name>" +
-                      "</ns0:GetAllWorkflows>" +
+                      "<ns0:GetNextLogSegment xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<LogHandle>" + logHandle + "</LogHandle>" +
+                      "<TimeOut>" + timeOut + "</TimeOut>" +
+                      "</ns0:GetNextLogSegment>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetSessionPerfomanceDataTemplate(string sessionId, string folderName)
+        internal static XmlDocument GetSessionPerfomanceDataTemplate(string sessionId, string folderName,string workflowName,string taskInstancePath,DIServiceInfo serviceInfo)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
-                      "<Name>" + folderName + "</Name>" +
-                      "</ns0:GetAllWorkflows>" +
+                     "<ns0:GetSessionPerformanceData xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<FolderName>" + folderName + "</FolderName>" +
+                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
+                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                      "</ns0:GetSessionPerformanceData>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetSessionStatisticTemplate(string sessionId, string folderName)
+        internal static XmlDocument GetSessionStatisticTemplate(string sessionId, string folderName, string workflowName, string taskInstancePath, DIServiceInfo serviceInfo)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
-                      "<Name>" + folderName + "</Name>" +
-                      "</ns0:GetAllWorkflows>" +
+                      "<ns0:GetSessionStatistics xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<FolderName>" + folderName + "</FolderName>" +
+                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
+                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                      "</ns0:GetSessionStatistics>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetTaskDetailTemplate(string sessionId, string folderName)
+        private static string ConvertParametersToXmlText(List<TaskParam> param)
+        {
+            string result = "";
+            foreach(TaskParam item in param)
+            {
+                result += "<Parameters>" +
+                    "<Scope>" + item.Scope + "</Scope>" +
+                    "<Name>" + item.Name + "</Name>" +
+                    "<Value>" + item.Value + "</Value>"
+                    + "</Parameters>";
+
+            }
+            return result;
+        }
+
+        internal static XmlDocument GetTaskDetailTemplate(string sessionId, 
+                                                            string folderName, 
+                                                            string workflowName,
+                                                            int workflowRunId,
+                                                            string parameterFileName,
+                                                            List<TaskParam> param,
+                                                            RequestMode mode,
+                                                            string taskInstancePath,
+                                                            bool isAbort,
+                                                            DIServiceInfo serviceInfo)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
-                      "<Name>" + folderName + "</Name>" +
-                      "</ns0:GetAllWorkflows>" +
+                       "<ns0:GetTaskDetails xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<FolderName>" + folderName + "</FolderName>" +
+                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
+                         "<WorkflowRunId>" + workflowRunId + "</WorkflowRunId>" +
+                         "<WorkflowRunInstanceName>"+ workflowName + "</WorkflowRunInstanceName>"+
+                         "<ParameterFileName>"+ parameterFileName + "</ParameterFileName>"+
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param)+
+                         "</Parameters>"+
+                         "<RequestMode>"+ mode + "</RequestMode>" +
+                         "<TaskInstancePath>"+ taskInstancePath + "</TaskInstancePath>" +
+                         "<IsAbort>"+ isAbort + "</IsAbort>"+
+                      "</ns0:GetTaskDetails>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
@@ -263,12 +305,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -280,12 +322,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -297,12 +339,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -314,12 +356,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -331,12 +373,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -348,12 +390,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -365,12 +407,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -382,12 +424,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -399,12 +441,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -416,12 +458,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -433,12 +475,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -450,12 +492,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -467,12 +509,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -484,12 +526,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -501,12 +543,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -518,12 +560,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -535,12 +577,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -552,12 +594,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -569,12 +611,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +
@@ -586,12 +628,12 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:GetAllWorkflows xmlns:ns0 = \"http://www.informatica.com/wsh\">" +
+                      "<ns0:GetAllWorkflows xmlns:ns0 = "+_informaticaWshLink+">" +
                       "<Name>" + folderName + "</Name>" +
                       "</ns0:GetAllWorkflows>" +
                    "</soap:Body>" +

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="DIServiceInfo.cs" />
     <Compile Include="InfaLogParser.cs" />
+    <Compile Include="MonitorMode.cs" />
     <Compile Include="RequestMode.cs" />
     <Compile Include="RequestWorkers\InformaticaWebRequestController.cs" />
     <Compile Include="RequestWorkers\InformaticaWebRequestsTemplates.cs" />
@@ -50,8 +51,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestWorkers\ValuesSoapXml.cs" />
     <Compile Include="RequestWorkers\WebRequestsExecutor.cs" />
+    <Compile Include="TaskAttribute.cs" />
+    <Compile Include="TaskKey.cs" />
     <Compile Include="TaskParam.cs" />
     <Compile Include="WorkflowInformation.cs" />
+    <Compile Include="WorkflowInformationEx.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

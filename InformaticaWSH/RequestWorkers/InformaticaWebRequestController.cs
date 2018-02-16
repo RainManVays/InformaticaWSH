@@ -42,6 +42,134 @@ namespace InformaticaWSH
             await executor.ExecuteRequest(InformaticaWebRequestsTemplates.GetLogoutTemplate(sessionId));
         }
 
+        public async Task AllFolders(string sessionId)
+        {
+        }
+
+        public async Task AllRepositories(string sessionId)
+        {
+        }
+
+        public async Task AllWorkflows(string sessionId, string folderName)
+        {
+        }
+
+        public async Task WorkflowLog(string sessionId, string folderName, string workflowName, int workflowRunId, DIServiceInfo serviceInfo, int timeout = 60)
+        {
+        }
+
+        public async Task WorkflowLog(string sessionId, string folderName, string workflowName, string workflowInstanceName, int workflowRunId, DIServiceInfo serviceInfo, int timeout = 60)
+        {
+        }
+
+        public async Task SessionLog(string sessionId, string folderName, string workflowName, string taskInstancePath, DIServiceInfo serviceInfo, int timeout = 60)
+        {
+        }
+
+        public async Task DeinitServerConnection(string sessionId, string folderName)
+        {
+        }
+
+        public async Task DIServerProp(string sessionId, DIServiceInfo serviceInfo)
+        {
+        }
+
+        public async Task NextLogSegment(string sessionId, int logHandle, int timeOut = 60)
+        {
+        }
+
+        public async Task SessionPerfomanceData(string sessionId, string folderName, string workflowName, string taskInstancePath, DIServiceInfo serviceInfo)
+        {
+        }
+
+        public async Task SessionStatistic(string sessionId, string folderName, string workflowName, string taskInstancePath, DIServiceInfo serviceInfo)
+        {
+        }
+
+        public async Task TaskDetail(string sessionId, string folderName)
+        {
+        }
+
+        public async Task TaskDetailEx(string sessionId, string folderName)
+        {
+        }
+
+        public async Task WorkflowDetail(string sessionId, string folderName)
+        {
+        }
+
+        public async Task WorkflowDetailEx(string sessionId, string folderName)
+        {
+        }
+
+        public async Task InitServerConnection(string sessionId, string folderName)
+        {
+        }
+
+        public async Task MonitorDIServer(string sessionId, string folderName)
+        {
+        }
+
+        public async Task PingDIServer(string sessionId, int timeOut = 60)
+        {
+        }
+
+        public async Task RecoverWorkflow(string sessionId, string folderName)
+        {
+        }
+
+        public async Task ResumeWorkflow(string sessionId, string folderName)
+        {
+        }
+
+        public async Task ScheduleWorkflow(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StartSessLogFetch(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StartTask(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StartWorkflow(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StartWorkflowEx(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StartWorkflowFromTask(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StartWorkflowLogFetch(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StopTask(string sessionId, string folderName)
+        {
+        }
+
+        public async Task StopWorkflow(string sessionId, string folderName)
+        {
+        }
+
+        public async Task UncheduleWorkflow(string sessionId, string folderName)
+        {
+        }
+
+        public async Task WaitTillTaskComplete(string sessionId, string folderName)
+        {
+        }
+
+        public async Task WaitTillWorkflowComplete(string sessionId, string folderName)
+        {
+        }
+
 
         public async void Dispose()
         {

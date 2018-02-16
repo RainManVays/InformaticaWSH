@@ -51,6 +51,7 @@
     <Compile Include="RequestWorkers\ValuesSoapXml.cs" />
     <Compile Include="RequestWorkers\WebRequestsExecutor.cs" />
     <Compile Include="TaskParam.cs" />
+    <Compile Include="WorkflowInformation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

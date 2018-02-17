@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -21,6 +22,12 @@ namespace InformaticaWSH
             _metadataExecutor = new WebRequestsExecutor(url + @"/wsh/services/BatchServices/Metadata?WSDL");
             _serviceInfo = serviceInfo;
         }
+
+        public void ChangeServiceInfo(DIServiceInfo serviceInfo)
+        {
+            this._serviceInfo = serviceInfo;
+        }
+
         public async Task<string> Login(string domain, string repository, string login, string password)
         {
             Dispose();
@@ -33,9 +40,33 @@ namespace InformaticaWSH
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetLogoutTemplate(sessionId));
         }
-        //2821d596b63134bb162d92f973a
-        //WF_M_INF_CTL_OUT_SESSION_DATA
-        #region WORKFLOW
+
+        public async void Dispose()
+        {
+            if (!string.IsNullOrEmpty(_sessionId))
+            {
+                await Logout(_sessionId);
+                _sessionId = null;
+            }
+        }
+
+        #region METADATA WEBSERVICE
+        public async Task<List<string>> AllFolders(string sessionId)
+        {
+            var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllFoldersTemplate(sessionId));
+            return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
+        }
+        public async Task<List<string>> AllDIServers(string sessionId)
+        {
+            var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllDIServersTemplate(sessionId));
+            return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
+        }
+
+        public async Task<List<string>> AllRepositories()
+        {
+            var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllRepositoriesTemplate());
+            return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
+        }
         public async Task<List<WorkflowItem>> AllWorkflows(string sessionId, string folderName)
         {
             var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllWorkflowsTemplate(sessionId, folderName));
@@ -43,7 +74,7 @@ namespace InformaticaWSH
             var names = ValuesSoapXml.GetAllValuesOnElement(result, "Name");
             var isValids = ValuesSoapXml.GetAllValuesOnElement(result, "IsValid");
             List<WorkflowItem> wfItems = new List<WorkflowItem>(names.Count);
-            for(int i = 0; i < names.Count; i++)
+            for (int i = 0; i < names.Count; i++)
             {
                 wfItems.Add(new WorkflowItem
                 {
@@ -73,6 +104,11 @@ namespace InformaticaWSH
             }
             return taskItem;
         }
+        #endregion
+        #region INTEGRATION WEBSERVICE
+
+        #region WORKFLOW
+
 
 
         public async Task WorkflowDetail(string sessionId, string folderName)
@@ -100,10 +136,6 @@ namespace InformaticaWSH
                 workflowInfo, _serviceInfo, timeout));
             return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
-
-
-
-
 
         public async Task StartWorkflow(string sessionId, string folderName)
         {
@@ -183,60 +215,56 @@ namespace InformaticaWSH
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetSessionLogTemplate(sessionId, folderName, workflowName, taskInstancePath, _serviceInfo, timeout));
             return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
-#endregion
+        #endregion
 
-
-        public async Task<List<string>> AllFolders(string sessionId)
+        #region SERVER
+        public async Task DeinitServerConnection(string sessionId)
         {
-            var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllFoldersTemplate(sessionId));
-            return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
-        }
-        public async Task<List<string>> AllDIServers(string sessionId)
-        {
-            var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllDIServersTemplate(sessionId));
-            return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
+            await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetDeinitServerConnectionTemplate(sessionId));
         }
 
-        public async Task<List<string>> AllRepositories()
+        public async Task<string> DIServerProp(string sessionId)
         {
-            var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllRepositoriesTemplate());
-            return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
+            string result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetDIServerPropTemplate(sessionId, _serviceInfo));
+            return result;
         }
 
-        public async Task DeinitServerConnection(string sessionId, string folderName)
+        public async Task<string> NextLogSegment(string sessionId, int logHandle, int timeOut = 60)
         {
+           string result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetNextLogSegmentTemplate(sessionId, logHandle, timeOut));
+           return result;
         }
 
-        public async Task DIServerProp(string sessionId, DIServiceInfo serviceInfo)
+        public async Task InitServerConnection(string sessionId, string loginHandle="", string serverName = "", string domainName = "")
         {
-        }
-
-        public async Task NextLogSegment(string sessionId, int logHandle, int timeOut = 60)
-        {
-        }
-
-
-
-
-        public async Task InitServerConnection(string sessionId, string folderName)
-        {
+            await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetInitServerConnectionTemplate(sessionId,loginHandle,serverName,domainName));
         }
 
         public async Task MonitorDIServer(string sessionId, string folderName)
         {
         }
 
-        public async Task PingDIServer(string sessionId, int timeOut = 60)
+        public async Task<bool> PingDIServer(string sessionId, int timeOut = 10)
         {
-        }
-
-        public async void Dispose()
-        {
-            if (!string.IsNullOrEmpty(_sessionId))
+            string result = "";
+            try
             {
-                await Logout(_sessionId);
-                _sessionId = null;
+                result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetPingDIServerTemplate(sessionId, _serviceInfo, timeOut));
+                if (ValuesSoapXml.GetValueOnElement(result, "PingDIServerReturn").Equals("ALIVE"))
+                    return true;
+
             }
+            // should fixed later
+            catch (WebException e)
+            {
+                if (e.Message.Contains("Unable to establish connection"))
+                    return false;
+            }
+            return false;
         }
+        #endregion
+
+
+        #endregion
     }
 }

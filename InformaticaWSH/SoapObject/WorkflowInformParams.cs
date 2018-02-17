@@ -1,6 +1,6 @@
 ﻿namespace InformaticaWSH
 {
-    class WorkflowInformation
+   public class WorkflowInformParams
     {
         public string FolderName { get; set; }
         public string WorkflowName { get; set; }

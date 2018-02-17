@@ -1,6 +1,6 @@
 ﻿namespace InformaticaWSH
 {
-    class TaskKey
+    public class TaskKey
     {
         public string Key { get; set; }
         public bool MustUse { get; set; }

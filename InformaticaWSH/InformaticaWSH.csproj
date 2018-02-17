@@ -41,21 +41,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DIServiceInfo.cs" />
+    <Compile Include="SoapObject\DIServiceInfo.cs" />
     <Compile Include="InfaLogParser.cs" />
-    <Compile Include="MonitorMode.cs" />
-    <Compile Include="RequestMode.cs" />
+    <Compile Include="SoapObject\MonitorMode.cs" />
+    <Compile Include="SoapObject\RequestMode.cs" />
     <Compile Include="RequestWorkers\InformaticaWebRequestController.cs" />
     <Compile Include="RequestWorkers\InformaticaWebRequestsTemplates.cs" />
-    <Compile Include="LogMessage.cs" />
+    <Compile Include="SoapObject\LogMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestWorkers\ValuesSoapXml.cs" />
     <Compile Include="RequestWorkers\WebRequestsExecutor.cs" />
-    <Compile Include="TaskAttribute.cs" />
-    <Compile Include="TaskKey.cs" />
-    <Compile Include="TaskParam.cs" />
-    <Compile Include="WorkflowInformation.cs" />
-    <Compile Include="WorkflowInformationEx.cs" />
+    <Compile Include="SoapObject\TaskAttribute.cs" />
+    <Compile Include="SoapObject\TaskItem.cs" />
+    <Compile Include="SoapObject\TaskKey.cs" />
+    <Compile Include="SoapObject\TaskParam.cs" />
+    <Compile Include="SoapObject\WorkflowInforExParams.cs" />
+    <Compile Include="SoapObject\WorkflowInformParams.cs" />
+    <Compile Include="SoapObject\WorkflowItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

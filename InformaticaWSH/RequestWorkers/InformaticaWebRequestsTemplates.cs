@@ -491,19 +491,19 @@ namespace InformaticaWSH
                        "</soap:Header>" +
                        "<soap:Body>" +
                       "<ns0:RecoverWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                       ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:RecoverWorkflow>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
@@ -522,17 +522,17 @@ namespace InformaticaWSH
                       "<ns0:ResumeWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
                         ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:ResumeWorkflow>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
@@ -551,17 +551,17 @@ namespace InformaticaWSH
                       "<ns0:ScheduleWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
                         ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:ScheduleWorkflow>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
@@ -756,17 +756,17 @@ namespace InformaticaWSH
                       "<ns0:StopWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
                         ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:StopWorkflow>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
@@ -785,17 +785,17 @@ namespace InformaticaWSH
                        "<ns0:UnscheduleWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
                         ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:UnscheduleWorkflow>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
@@ -839,23 +839,21 @@ namespace InformaticaWSH
                        "<ns0:WaitTillWorkflowComplete xmlns:ns0 = " + _informaticaWshLink + ">" +
                         ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:WaitTillWorkflowComplete>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;
         }
-
-
     }
 }

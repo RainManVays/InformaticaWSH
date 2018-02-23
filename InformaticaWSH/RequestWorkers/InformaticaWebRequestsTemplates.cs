@@ -195,47 +195,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetWorkflowLogTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo,int timeout)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + "</SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                        "<ns0:GetWorkflowLog xmlns:ns0="+_informaticaWshLink+">"+
-                         ConvertDiServiceInfoToXMLText(serviceInfo) +
-                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                         "<Timeout>" +timeout+"</Timeout>" +
-                      "</ns0:GetWorkflowLog>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetSessionLogTemplate(string sessionId, string folderName, string workflowName,string taskInstancePath, DIServiceInfo serviceInfo, int timeout = 60)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + "</SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                        "<ns0:GetSessionLog xmlns:ns0="+_informaticaWshLink+">" +
-                         ConvertDiServiceInfoToXMLText(serviceInfo) +
-                         "<FolderName>" + folderName + "</FolderName>" +
-                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
-                         "<Timeout>" + timeout + "</Timeout>" +
-                      "</ns0:GetSessionLog>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-
+        
         internal static XmlDocument GetDeinitServerConnectionTemplate(string sessionId)
         {
             XmlDocument template = new XmlDocument();
@@ -269,6 +229,62 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
+        internal static XmlDocument GetInitServerConnectionTemplate(string sessionId, string loginHandle, string serverName, string domainName)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:InitializeDIServerConnection  xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<LoginHandle>" + loginHandle + "</LoginHandle>" +
+                      "<DIServerName>" + serverName + "</DIServerName>" +
+                      "<DIServerDomain>" + domainName + "</DIServerDomain>" +
+                      "</ns0:InitializeDIServerConnection >" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetMonitorDIServerTemplate(string sessionId, MonitorMode mode, DIServiceInfo serviceInfo)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                       "<ns0:MonitorDIServer  xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<MonitorMode>" + mode + "</MonitorMode>" +
+                      "</ns0:MonitorDIServer>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetPingDIServerTemplate(string sessionId, DIServiceInfo serviceInfo, int timeOut)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                       "<ns0:PingDIServer xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<TimeOut>" + timeOut + "</TimeOut>" +
+                      "</ns0:PingDIServer>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+
         internal static XmlDocument GetNextLogSegmentTemplate(string sessionId,int logHandle,int timeOut )
         {
             XmlDocument template = new XmlDocument();
@@ -327,14 +343,49 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetTaskDetailTemplate(string sessionId,
-                                                            WorkflowInformParams workflowInfo,
-                                                            string parameterFileName,
-                                                            List<TaskParam> param,
-                                                            RequestMode mode,
-                                                            string taskInstancePath,
-                                                            bool isAbort,
-                                                            DIServiceInfo serviceInfo)
+        internal static XmlDocument GetStartSessLogFetchTemplate(string sessionId, string folderName, string workflowName, int workflowRunId, DIServiceInfo serviceInfo)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:StartSessionLogFetch xmlns:ns0 = " + _informaticaWshLink + ">" +
+                       ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<FolderName>" + folderName + "</FolderName>" +
+                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
+                         "<TaskInstancePath>" + workflowRunId + "</TaskInstancePath>" +
+                      "</ns0:StartSessionLogFetch>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetSessionLogTemplate(string sessionId, string folderName, string workflowName, string taskInstancePath, DIServiceInfo serviceInfo, int timeout = 60)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + "</SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                        "<ns0:GetSessionLog xmlns:ns0=" + _informaticaWshLink + ">" +
+                         ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         "<FolderName>" + folderName + "</FolderName>" +
+                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
+                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         "<Timeout>" + timeout + "</Timeout>" +
+                      "</ns0:GetSessionLog>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+
+        internal static XmlDocument GetTaskDetailTemplate(string sessionId,WorkflowInformParams workflowInfo,string parameterFileName,List<TaskParam> param,RequestMode mode,string taskInstancePath,bool isAbort,DIServiceInfo serviceInfo)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -378,12 +429,212 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetWorkflowDetailTemplate(string sessionId,List<TaskAttribute> attribute,List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        internal static XmlDocument GetStartTaskTemplate(string sessionId, RequestMode requestMode, List<TaskParam> param, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort,  DIServiceInfo serviceInfo)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
                     "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:StartTask xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformToXmlText(workflowInfo) +
+                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param) +
+                         "</Parameters>" +
+                         "<RequestMode>" + requestMode + "</RequestMode>" +
+                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         "<IsAbort>" + isAbort + "</IsAbort>" +
+                      "</ns0:StartTask>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetWaitTillTaskCompleteTemplate(string sessionId, RequestMode requestMode, List<TaskParam> param, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, DIServiceInfo serviceInfo)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                       "<ns0:WaitTillTaskComplete xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformToXmlText(workflowInfo) +
+                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param) +
+                         "</Parameters>" +
+                         "<RequestMode>" + requestMode + "</RequestMode>" +
+                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         "<IsAbort>" + isAbort + "</IsAbort>" +
+                      "</ns0:WaitTillTaskComplete>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetStopTaskTemplate(string sessionId, RequestMode requestMode, List<TaskParam> param, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, DIServiceInfo serviceInfo)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:StopTask xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformToXmlText(workflowInfo) +
+                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param) +
+                         "</Parameters>" +
+                         "<RequestMode>" + requestMode + "</RequestMode>" +
+                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         "<IsAbort>" + isAbort + "</IsAbort>" +
+                      "</ns0:StopTask>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+
+        internal static XmlDocument GetStartWorkflowLogFetchTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:StartWorkflowLogFetch xmlns:ns0 = " + _informaticaWshLink + ">" +
+                       ConvertDiServiceInfoToXMLText(serviceInfo) +
+                       ConvertWorkflowInformToXmlText(workflowInfo) +
+                      "</ns0:StartWorkflowLogFetch>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetRecoverWorkflowTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:RecoverWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
+                       ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformToXmlText(workflowInfo) +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param) +
+                         "</Parameters>" +
+                         "<RequestMode>" + requestMode + "</RequestMode>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
+                         "<IsAbort>" + isAbort + "</IsAbort>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
+                      "</ns0:RecoverWorkflow>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetWorkflowLogTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, int timeout)
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + "</SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                        "<ns0:GetWorkflowLog xmlns:ns0=" + _informaticaWshLink + ">" +
+                         ConvertDiServiceInfoToXMLText(serviceInfo) +
+                         ConvertWorkflowInformToXmlText(workflowInfo) +
+                         "<Timeout>" + timeout + "</Timeout>" +
+                      "</ns0:GetWorkflowLog>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetResumeWorkflowTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:ResumeWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformToXmlText(workflowInfo) +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param) +
+                         "</Parameters>" +
+                         "<RequestMode>" + requestMode + "</RequestMode>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
+                         "<IsAbort>" + isAbort + "</IsAbort>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
+                      "</ns0:ResumeWorkflow>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetScheduleWorkflowTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<SessionId>" + sessionId + " </SessionId>" +
+                      "</ns0:Context>" +
+                       "</soap:Header>" +
+                       "<soap:Body>" +
+                      "<ns0:ScheduleWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
+                        ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformToXmlText(workflowInfo) +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
+                         "<Parameters>" +
+                           ConvertParametersToXmlText(param) +
+                         "</Parameters>" +
+                         "<RequestMode>" + requestMode + "</RequestMode>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
+                         "<IsAbort>" + isAbort + "</IsAbort>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
+                      "</ns0:ScheduleWorkflow>" +
+                   "</soap:Body>" +
+                "</soap:Envelope>");
+            return template;
+        }
+        internal static XmlDocument GetWorkflowDetailTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
+        {
+            XmlDocument template = new XmlDocument();
+            template.LoadXml(_envelopeHeader +
+                   "<soap:Header>" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
@@ -412,7 +663,7 @@ namespace InformaticaWSH
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
                    "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
+                    "<ns0:Context xmlns:ns0 = " + _informaticaWshLink + ">" +
                       "<SessionId>" + sessionId + " </SessionId>" +
                       "</ns0:Context>" +
                        "</soap:Header>" +
@@ -425,196 +676,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetInitServerConnectionTemplate(string sessionId, string loginHandle, string serverName,string domainName)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:InitializeDIServerConnection  xmlns:ns0 = " + _informaticaWshLink+">" +
-                      "<LoginHandle>" + loginHandle + "</LoginHandle>" +
-                      "<DIServerName>" + serverName + "</DIServerName>" +
-                      "<DIServerDomain>" + domainName + "</DIServerDomain>" +
-                      "</ns0:InitializeDIServerConnection >" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetMonitorDIServerTemplate(string sessionId, MonitorMode mode,DIServiceInfo serviceInfo)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                       "<ns0:MonitorDIServer  xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                         "<MonitorMode>" + mode + "</MonitorMode>" +
-                      "</ns0:MonitorDIServer>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetPingDIServerTemplate(string sessionId, DIServiceInfo serviceInfo,int timeOut)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                       "<ns0:PingDIServer xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                         "<TimeOut>" + timeOut + "</TimeOut>" +
-                      "</ns0:PingDIServer>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetRecoverWorkflowTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason = "")
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:RecoverWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
-                       ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformToXmlText(workflowInfo) +
-                        ConvertElementAndValueToXmlText("Reason", reason) +
-                        ConvertAttributeToXmlText(attribute) +
-                        ConvertKeyToXmlText(key) +
-                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
-                         "<Parameters>" +
-                           ConvertParametersToXmlText(param) +
-                         "</Parameters>" +
-                         "<RequestMode>" + requestMode + "</RequestMode>" +
-                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                         ConvertElementAndValueToXmlText("OSUser", osUser) +
-                      "</ns0:RecoverWorkflow>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetResumeWorkflowTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:ResumeWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformToXmlText(workflowInfo) +
-                        ConvertElementAndValueToXmlText("Reason", reason) +
-                        ConvertAttributeToXmlText(attribute) +
-                        ConvertKeyToXmlText(key) +
-                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
-                         "<Parameters>" +
-                           ConvertParametersToXmlText(param) +
-                         "</Parameters>" +
-                         "<RequestMode>" + requestMode + "</RequestMode>" +
-                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                         ConvertElementAndValueToXmlText("OSUser", osUser) +
-                      "</ns0:ResumeWorkflow>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetScheduleWorkflowTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:ScheduleWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformToXmlText(workflowInfo) +
-                        ConvertElementAndValueToXmlText("Reason", reason) +
-                        ConvertAttributeToXmlText(attribute) +
-                        ConvertKeyToXmlText(key) +
-                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
-                         "<Parameters>" +
-                           ConvertParametersToXmlText(param) +
-                         "</Parameters>" +
-                         "<RequestMode>" + requestMode + "</RequestMode>" +
-                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                         ConvertElementAndValueToXmlText("OSUser", osUser) +
-                      "</ns0:ScheduleWorkflow>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetStartSessLogFetchTemplate(string sessionId, string folderName, string workflowName, int workflowRunId, DIServiceInfo serviceInfo)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:StartSessionLogFetch xmlns:ns0 = " + _informaticaWshLink+">" +
-                       ConvertDiServiceInfoToXMLText(serviceInfo) +
-                         "<FolderName>" + folderName + "</FolderName>" +
-                         "<WorkflowName>" + workflowName + "</WorkflowName>" +
-                         "<TaskInstancePath>" + workflowRunId + "</TaskInstancePath>" +
-                      "</ns0:StartSessionLogFetch>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetStartTaskTemplate(string sessionId, RequestMode requestMode, List<TaskParam> param, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort,  DIServiceInfo serviceInfo)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:StartTask xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformToXmlText(workflowInfo) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
-                         "<Parameters>" +
-                           ConvertParametersToXmlText(param) +
-                         "</Parameters>" +
-                         "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                      "</ns0:StartTask>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-
-
-        internal static XmlDocument GetStartWorkflowTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        internal static XmlDocument GetStartWorkflowTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -643,7 +705,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetStartWorkflowExTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, string osUser, string reason)
+        internal static XmlDocument GetStartWorkflowExTemplate(string sessionId, WorkflowInforExParams workflowInfoEx, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -671,7 +733,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetStartWorkflowFromTaskTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason )
+        internal static XmlDocument GetStartWorkflowFromTaskTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -700,50 +762,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetStartWorkflowLogFetchTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:StartWorkflowLogFetch xmlns:ns0 = " + _informaticaWshLink+">" +
-                       ConvertDiServiceInfoToXMLText(serviceInfo) +
-                       ConvertWorkflowInformToXmlText(workflowInfo) +
-                      "</ns0:StartWorkflowLogFetch>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetStopTaskTemplate(string sessionId, RequestMode requestMode, List<TaskParam> param, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, DIServiceInfo serviceInfo)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                      "<ns0:StopTask xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformToXmlText(workflowInfo) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
-                         "<Parameters>" +
-                           ConvertParametersToXmlText(param) +
-                         "</Parameters>" +
-                         "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                      "</ns0:StopTask>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetStopWorkflowTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        internal static XmlDocument GetStopWorkflowTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute=null, List<TaskKey> key= null, List<TaskParam> param = null, RequestMode requestMode=RequestMode.NORMAL,  string parameterFileName="", string taskInstancePath = "", bool isAbort=false, string osUser = "", string reason = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -772,7 +791,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetUncheduleWorkflowTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        internal static XmlDocument GetUncheduleWorkflowTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -801,32 +820,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetWaitTillTaskCompleteTemplate(string sessionId, RequestMode requestMode, List<TaskParam> param, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, DIServiceInfo serviceInfo)
-        {
-            XmlDocument template = new XmlDocument();
-            template.LoadXml(_envelopeHeader +
-                   "<soap:Header>" +
-                    "<ns0:Context xmlns:ns0 = "+_informaticaWshLink+">" +
-                      "<SessionId>" + sessionId + " </SessionId>" +
-                      "</ns0:Context>" +
-                       "</soap:Header>" +
-                       "<soap:Body>" +
-                       "<ns0:WaitTillTaskComplete xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformToXmlText(workflowInfo) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
-                         "<Parameters>" +
-                           ConvertParametersToXmlText(param) +
-                         "</Parameters>" +
-                         "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                      "</ns0:WaitTillTaskComplete>" +
-                   "</soap:Body>" +
-                "</soap:Envelope>");
-            return template;
-        }
-        internal static XmlDocument GetWaitTillWorkflowCompleteTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode,  WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        internal static XmlDocument GetWaitTillWorkflowCompleteTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, List<TaskAttribute> attribute = null, List<TaskKey> key = null, List<TaskParam> param = null, RequestMode requestMode = RequestMode.NORMAL, string parameterFileName = "", string taskInstancePath = "", bool isAbort = false, string osUser = "", string reason = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +

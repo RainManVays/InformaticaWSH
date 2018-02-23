@@ -36,13 +36,13 @@ namespace InformaticaWSH
                 ConvertElementAndValueToXmlText("FolderName", workflowInfo.FolderName) +
                 ConvertElementAndValueToXmlText("WorkflowName", workflowInfo.WorkflowName) +
                 ConvertElementAndValueToXmlText("WorkflowRunId", workflowInfo.WorkflowRunId==0?"":workflowInfo.WorkflowRunId.ToString()) +
-                ConvertElementAndValueToXmlText("WorkflowRunInstanceName", workflowInfo.GetWorkflowInstaceName());
+                ConvertElementAndValueToXmlText("WorkflowRunInstanceName", workflowInfo.WorkflowInstanceName);
         }
         private static string ConvertWorkflowInformExToXmlText(WorkflowInforExParams workflowInfoEx)
         {
             return ConvertElementAndValueToXmlText("FolderName", workflowInfoEx.FolderName) +
                 ConvertElementAndValueToXmlText("WorkflowName", workflowInfoEx.WorkflowName) +
-                ConvertElementAndValueToXmlText("WorkflowRunInstanceName", workflowInfoEx.GetWorkflowInstaceName());
+                ConvertElementAndValueToXmlText("WorkflowRunInstanceName", workflowInfoEx.WorkflowInstanceName);
         }
 
         private static string ConvertElementAndValueToXmlText(string elementName,string value)
@@ -643,7 +643,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetStartWorkflowExTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        internal static XmlDocument GetStartWorkflowExTemplate(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, string osUser, string reason)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -654,19 +654,18 @@ namespace InformaticaWSH
                        "</soap:Header>" +
                        "<soap:Body>" +
                       "<ns0:StartWorkflowEx xmlns:ns0 = " + _informaticaWshLink + ">" +
-                        ConvertDiServiceInfoToXMLText(serviceInfo) +
-                        ConvertWorkflowInformExToXmlText(workflowInfoEx)+
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                         ConvertDiServiceInfoToXMLText(serviceInfo) +
+                        ConvertWorkflowInformExToXmlText(workflowInfoEx) +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
-                         "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
                       "</ns0:StartWorkflowEx>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
@@ -682,21 +681,21 @@ namespace InformaticaWSH
                       "</ns0:Context>" +
                        "</soap:Header>" +
                        "<soap:Body>" +
-                      "<ns0:StartWorkflow xmlns:ns0 = " + _informaticaWshLink + ">" +
+                      "<ns0:StartWorkflowFromTask xmlns:ns0 = " + _informaticaWshLink + ">" +
                         ConvertDiServiceInfoToXMLText(serviceInfo) +
                         ConvertWorkflowInformToXmlText(workflowInfo) +
-                          "<Reason>" + reason + "</Reason>" +
-                           ConvertAttributeToXmlText(attribute) +
-                           ConvertKeyToXmlText(key) +
-                         "<ParameterFileName>" + parameterFileName + "</ParameterFileName>" +
+                        ConvertElementAndValueToXmlText("Reason", reason) +
+                        ConvertAttributeToXmlText(attribute) +
+                        ConvertKeyToXmlText(key) +
+                         ConvertElementAndValueToXmlText("ParameterFileName", parameterFileName) +
                          "<Parameters>" +
                            ConvertParametersToXmlText(param) +
                          "</Parameters>" +
                          "<RequestMode>" + requestMode + "</RequestMode>" +
-                         "<TaskInstancePath>" + taskInstancePath + "</TaskInstancePath>" +
+                         ConvertElementAndValueToXmlText("TaskInstancePath", taskInstancePath) +
                          "<IsAbort>" + isAbort + "</IsAbort>" +
-                         "<OSUser>" + osUser + "</OSUser>" +
-                      "</ns0:StartWorkflow>" +
+                         ConvertElementAndValueToXmlText("OSUser", osUser) +
+                      "</ns0:StartWorkflowFromTask>" +
                    "</soap:Body>" +
                 "</soap:Envelope>");
             return template;

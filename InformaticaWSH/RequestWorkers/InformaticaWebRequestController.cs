@@ -108,10 +108,21 @@ namespace InformaticaWSH
         #region INTEGRATION WEBSERVICE
         #region WORKFLOW
 
-        public async Task WorkflowDetail(string sessionId, string folderName)
+        public async Task WorkflowDetail(string sessionId, string folderName, string workflowName)
         {
         }
-
+        public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode)
+        {
+        }
+        public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
+        {
+        }
+        public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
+        {
+        }
+        public async Task WorkflowDetail(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        {
+        }
         public async Task WorkflowDetailEx(string sessionId, string folderName)
         {
         }
@@ -220,13 +231,180 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
         }
 
-        public async Task StartWorkflowEx(string sessionId, string folderName)
+        public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName)
         {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
+                sessionId: sessionId,
+                requestMode: RequestMode.NORMAL,
+                workflowInfoEx: new WorkflowInforExParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                key: null, attribute: null, param: null,
+                osUser: "",
+                reason: "",
+                parameterFileName: "",
+                taskInstancePath: ""));
+            return  int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
+        }
+        public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfoEx: new WorkflowInforExParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                key: null, attribute: null, param: null,
+                osUser: "",
+                reason: "",
+                parameterFileName: "",
+                taskInstancePath: ""));
+            return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
+        }
+        public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfoEx: new WorkflowInforExParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                key: null, attribute: null, param: null,
+                osUser: "",
+                reason: "",
+                parameterFileName: parameterFileName,
+                taskInstancePath: ""));
+            return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
+        }
+        public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfoEx: new WorkflowInforExParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                key: null, attribute: null, param: param,
+                osUser: "",
+                reason: "",
+                parameterFileName: "",
+                taskInstancePath: ""));
+            return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
+        }
+        public async Task<int> StartWorkflowEx(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, string osUser, string reason)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfoEx: workflowInfoEx,
+                serviceInfo: _serviceInfo,
+                key: key, attribute: attribute, param: param,
+                osUser: osUser,
+                reason: reason,
+                parameterFileName: parameterFileName,
+                taskInstancePath: taskInstancePath));
+            return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
         }
 
-        public async Task StartWorkflowFromTask(string sessionId, string folderName)
+        public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName,string taskInstancePath)
         {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
+                sessionId: sessionId,
+                requestMode: RequestMode.NORMAL,
+                workflowInfo: new WorkflowInformParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                isAbort: false,
+                key: null, attribute: null, param: null,
+                osUser: "",
+                reason: "",
+                parameterFileName: "",
+                taskInstancePath: taskInstancePath));
         }
+        public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfo: new WorkflowInformParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                isAbort: false,
+                key: null, attribute: null, param: null,
+                osUser: "",
+                reason: "",
+                parameterFileName: "",
+                taskInstancePath: taskInstancePath));
+        }
+        public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, string parameterFileName)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfo: new WorkflowInformParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                isAbort: false,
+                key: null, attribute: null, param: null,
+                osUser: "",
+                reason: "",
+                parameterFileName: parameterFileName,
+                taskInstancePath: taskInstancePath));
+        }
+        public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfo: new WorkflowInformParams
+                {
+                    FolderName = folderName,
+                    WorkflowName = workflowName
+                },
+                serviceInfo: _serviceInfo,
+                isAbort: false,
+                key: null, attribute: null, param: param,
+                osUser: "",
+                reason: "",
+                parameterFileName: "",
+                taskInstancePath: taskInstancePath));
+        }
+        public async Task StartWorkflowFromTask(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
+                sessionId: sessionId,
+                requestMode: requestMode,
+                workflowInfo: workflowInfo,
+                serviceInfo: _serviceInfo,
+                isAbort: isAbort,
+                key: key, attribute: attribute, param: param,
+                osUser: osUser,
+                reason: reason,
+                parameterFileName: parameterFileName,
+                taskInstancePath: taskInstancePath));
+        }
+
 
         public async Task StartWorkflowLogFetch(string sessionId, string folderName)
         {

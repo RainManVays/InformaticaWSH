@@ -41,18 +41,25 @@ namespace InformaticaWSH
         public async Task<string> ExecuteRequest(XmlDocument soapEnvelopeXml)
         {
             HttpWebRequest webRequest = CreateWebRequest(_url);
+            InformaticaWebRequestController.SetlastRequest(soapEnvelopeXml.InnerXml);
             try
             {
                 await InsertSoapEnvelopeIntoWebRequest(soapEnvelopeXml, webRequest);
 
                 HttpWebResponse response = (HttpWebResponse)await webRequest.GetResponseAsync();
-                 
+
                 using (StreamReader stream = new StreamReader(response.GetResponseStream()))
-                    return await stream.ReadToEndAsync();
+                {
+                    string result= await stream.ReadToEndAsync();
+                    InformaticaWebRequestController.SetLastResponse(result);
+                    return result;
+                }
+                   
             }
             catch(WebException ex)
             {
                 var resp = await new StreamReader(ex.Response.GetResponseStream()).ReadToEndAsync();
+                InformaticaWebRequestController.SetlastErrowResponse(resp);
                 throw new WebException(ValuesSoapXml.GetValueOnElement(resp, "ErrorCode") +"\n"+ValuesSoapXml.GetValueOnElement(resp, "faultstring"));
             }
             

@@ -229,7 +229,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetInitServerConnectionTemplate(string sessionId, string loginHandle, string serverName, string domainName)
+        internal static XmlDocument GetInitServerConnectionTemplate(string sessionId, string loginHandle="", string serverName = "", string domainName = "")
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +
@@ -548,7 +548,7 @@ namespace InformaticaWSH
                 "</soap:Envelope>");
             return template;
         }
-        internal static XmlDocument GetWorkflowLogTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, int timeout)
+        internal static XmlDocument GetWorkflowLogTemplate(string sessionId, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, int timeout=60)
         {
             XmlDocument template = new XmlDocument();
             template.LoadXml(_envelopeHeader +

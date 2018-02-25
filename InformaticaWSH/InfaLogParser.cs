@@ -37,12 +37,14 @@ namespace InformaticaWSH
             
             if (!string.IsNullOrEmpty(row))
             {
-                LogMessage lmm = new LogMessage();
-                lmm.Severity = GetRow(" :",ref row);
-                lmm.LogTime= DateTime.ParseExact(GetRow("[", ref row).Trim(), "ddd MMM dd HH:mm:ss yyyy", provider);
-                lmm.Code = GetRow("] : ", ref row);
-                lmm.Thread = GetRow(" ", ref row);
-                lmm.Message = row;
+                LogMessage lmm = new LogMessage
+                {
+                    Severity = GetRow(" :", ref row),
+                    LogTime = DateTime.ParseExact(GetRow("[", ref row).Trim(), "ddd MMM dd HH:mm:ss yyyy", provider),
+                    Code = GetRow("] : ", ref row),
+                    Thread = GetRow(" ", ref row),
+                    Message = row
+                };
 
                 return lmm;
             }

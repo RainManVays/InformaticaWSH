@@ -8,6 +8,9 @@ using System.Xml;
 
 namespace InformaticaWSH
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InformaticaWebRequestController:IDisposable
     {
         WebRequestsExecutor _integrationExecutor;
@@ -17,16 +20,18 @@ namespace InformaticaWSH
         private static string _lastResponse;
         private static string _lastRequest;
         private static string _lastErrowResponse;
-        private static string _logPath;
+        private static string _logFolderPath;
+        private static string _instanceDT;
 
         internal static void SetLastResponse(string value)
         {
             _lastResponse = value;
-            if (!string.IsNullOrEmpty(_logPath))
-            {
-
-            }
+            LogWriter.WriteLog(_logFolderPath, _instanceDT,"response", value);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetLastResponse()
         {
             return _lastResponse;
@@ -34,7 +39,12 @@ namespace InformaticaWSH
         internal static void SetlastErrowResponse(string value)
         {
             _lastErrowResponse = value;
+            LogWriter.WriteLog(_logFolderPath, _instanceDT, "error", value);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetlastErrowResponse()
         {
             return _lastErrowResponse;
@@ -42,28 +52,60 @@ namespace InformaticaWSH
         internal static void SetlastRequest(string value)
         {
             _lastRequest = value;
+             LogWriter.WriteLog(_logFolderPath,_instanceDT, "request", value);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetlastRequest()
         {
             return _lastRequest;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="serviceInfo">target domain and integration service</param>
         public InformaticaWebRequestController(string url,DIServiceInfo serviceInfo)
         {
             _integrationExecutor = new WebRequestsExecutor(url+ @"/wsh/services/BatchServices/DataIntegration?WSDL");
             _metadataExecutor = new WebRequestsExecutor(url + @"/wsh/services/BatchServices/Metadata?WSDL");
             _serviceInfo = serviceInfo;
         }
-        public InformaticaWebRequestController(string url, DIServiceInfo serviceInfo, string logPath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="serviceInfo">target domain and integration service</param>
+        /// <param name="logFolderPath"></param>
+        public InformaticaWebRequestController(string url, DIServiceInfo serviceInfo, string logFolderPath)
         {
-            _logPath = logPath;
+            _instanceDT = DateTime.Now.ToString().Replace('.','_').Replace(':','-').Replace(' ','_');
+            _logFolderPath = logFolderPath;
+            _integrationExecutor = new WebRequestsExecutor(url + @"/wsh/services/BatchServices/DataIntegration?WSDL");
+            _metadataExecutor = new WebRequestsExecutor(url + @"/wsh/services/BatchServices/Metadata?WSDL");
+            _serviceInfo = serviceInfo;
         }
 
+        /// <summary>
+        /// you can change target IS without recreating constructor
+        /// </summary>
+        ///<param name="serviceInfo">target domain and integration service</param>
         public void ChangeServiceInfo(DIServiceInfo serviceInfo)
         {
             this._serviceInfo = serviceInfo;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="repository"></param>
+        /// <param name="login"></param>
+        /// <param name="password"></param>
+        /// <returns>session ID</returns>
         public async Task<string> Login(string domain, string repository, string login, string password)
         {
             Dispose();
@@ -72,11 +114,19 @@ namespace InformaticaWSH
             _sessionId = sessionId;
             return sessionId;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <returns></returns>
         public async Task Logout(string sessionId)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetLogoutTemplate(sessionId));
         }
 
+        /// <summary>
+        /// logout from web service
+        /// </summary>
         public async void Dispose()
         {
             if (!string.IsNullOrEmpty(_sessionId))
@@ -87,21 +137,41 @@ namespace InformaticaWSH
         }
 
         #region METADATA WEBSERVICE
+        /// <summary>
+        /// Get list all folders in repository
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <returns></returns>
         public async Task<List<string>> AllFolders(string sessionId)
         {
             var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllFoldersTemplate(sessionId));
             return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <returns>folders list</returns>
         public async Task<List<string>> AllDIServers(string sessionId)
         {
             var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllDIServersTemplate(sessionId));
             return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<string>> AllRepositories()
         {
             var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllRepositoriesTemplate());
             return ValuesSoapXml.GetAllValuesOnElement(result, "Name");
         }
+        /// <summary>
+        /// Get all workflows from folder
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <returns>workflow item list</returns>
         public async Task<List<WorkflowItem>> AllWorkflows(string sessionId, string folderName)
         {
             var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllWorkflowsTemplate(sessionId, folderName));
@@ -120,6 +190,15 @@ namespace InformaticaWSH
             }
             return wfItems;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="depth"></param>
+        /// <param name="isValid"></param>
+        /// <returns></returns>
         public async Task<List<TaskItem>> AllTaskInstances(string sessionId, string folderName, string workflowName, int depth = 1, bool isValid = true)
         {
             var result = await _metadataExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetAllTaskInstancesTemplate(sessionId, folderName, workflowName, depth, isValid));
@@ -143,6 +222,13 @@ namespace InformaticaWSH
         #region INTEGRATION WEBSERVICE
         #region WORKFLOW
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task WorkflowDetail(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailTemplate(
@@ -154,6 +240,14 @@ namespace InformaticaWSH
                  },
                  serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailTemplate(
@@ -166,6 +260,15 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailTemplate(
@@ -178,6 +281,15 @@ namespace InformaticaWSH
               },
               serviceInfo: _serviceInfo, parameterFileName: parameterFileName));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailTemplate(
@@ -190,7 +302,22 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo, param: param));
         }
-        public async Task WorkflowDetail(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task WorkflowDetail(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailTemplate(
                 sessionId: sessionId,
@@ -205,6 +332,13 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task<string> WorkflowDetailEx(string sessionId, string folderName,string workflowName)
         {
             var result=await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailExTemplate(
@@ -217,6 +351,14 @@ namespace InformaticaWSH
                     serviceInfo: _serviceInfo));
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="workflowRunId"></param>
+        /// <returns></returns>
         public async Task<string> WorkflowDetailEx(string sessionId, string folderName, string workflowName,int workflowRunId)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailExTemplate(
@@ -230,6 +372,12 @@ namespace InformaticaWSH
                     serviceInfo: _serviceInfo));
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="workflowInfo"></param>
+        /// <returns></returns>
         public async Task<string> WorkflowDetailEx(string sessionId, WorkflowInformParams workflowInfo)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowDetailExTemplate(
@@ -239,7 +387,15 @@ namespace InformaticaWSH
             return result;
         }
 
-        public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, string folderName, string workflowName, int workflowRunId, int timeout = 60)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="workflowRunId"></param>
+        /// <returns></returns>
+        public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, string folderName, string workflowName, int workflowRunId)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowLogTemplate(sessionId,
                 new WorkflowInformParams
@@ -247,16 +403,43 @@ namespace InformaticaWSH
                     FolderName= folderName,
                     WorkflowName=workflowName,
                     WorkflowRunId=workflowRunId
-                }, _serviceInfo, timeout));
+                }, _serviceInfo));
             return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
-        public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, WorkflowInformParams workflowInfo, int timeout = 60)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="workflowInfo"></param>
+        /// <returns></returns>
+        public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, WorkflowInformParams workflowInfo)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowLogTemplate(sessionId,
-                workflowInfo, _serviceInfo, timeout));
+                workflowInfo, _serviceInfo));
+            return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, WorkflowInformParams workflowInfo,int timeout)
+        {
+            var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWorkflowLogTemplate(sessionId,
+                workflowInfo, _serviceInfo,timeout));
             return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task StartWorkflow(string sessionId, string folderName,string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowTemplate(
@@ -268,6 +451,14 @@ namespace InformaticaWSH
                  },
                  serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task StartWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowTemplate(
@@ -280,6 +471,15 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task StartWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode,string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowTemplate(
@@ -292,6 +492,15 @@ namespace InformaticaWSH
               },
               serviceInfo: _serviceInfo, parameterFileName: parameterFileName));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task StartWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowTemplate(
@@ -304,7 +513,22 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo, param: param));
         }
-        public async Task StartWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task StartWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo,string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowTemplate(
                 sessionId: sessionId,
@@ -319,6 +543,13 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
@@ -332,6 +563,14 @@ namespace InformaticaWSH
                 ));
             return  int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
@@ -345,6 +584,15 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo));
             return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
@@ -359,6 +607,15 @@ namespace InformaticaWSH
                 parameterFileName: parameterFileName));
             return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
@@ -373,7 +630,21 @@ namespace InformaticaWSH
                 ));
             return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
         }
-        public async Task<int> StartWorkflowEx(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfoEx"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task<int> StartWorkflowEx(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, string parameterFileName, string taskInstancePath, string osUser, string reason)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowExTemplate(
                 sessionId: sessionId,
@@ -388,6 +659,14 @@ namespace InformaticaWSH
             return int.Parse(ValuesSoapXml.GetValueOnElement(result, "RunId"));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName,string taskInstancePath)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
@@ -400,6 +679,15 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo,
                 taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
@@ -413,6 +701,16 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo, 
                 taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
@@ -426,6 +724,16 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo, parameterFileName: parameterFileName,
                 taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
@@ -439,7 +747,22 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo, param: param,
                 taskInstancePath: taskInstancePath));
         }
-        public async Task StartWorkflowFromTask(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task StartWorkflowFromTask(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowFromTaskTemplate(
                 sessionId: sessionId,
@@ -454,6 +777,13 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task StartWorkflowLogFetch(string sessionId, string folderName,string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowLogFetchTemplate(
@@ -465,6 +795,14 @@ namespace InformaticaWSH
                  },
                  serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="workflowRunId"></param>
+        /// <returns></returns>
         public async Task StartWorkflowLogFetch(string sessionId, string folderName, string workflowName, int workflowRunId)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowLogFetchTemplate(
@@ -477,6 +815,12 @@ namespace InformaticaWSH
                  },
                  serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="workflowInfo"></param>
+        /// <returns></returns>
         public async Task StartWorkflowLogFetch(string sessionId, WorkflowInformParams workflowInfo)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartWorkflowLogFetchTemplate(
@@ -485,6 +829,13 @@ namespace InformaticaWSH
                  serviceInfo: _serviceInfo));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task RecoverWorkflow(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetRecoverWorkflowTemplate(
@@ -496,6 +847,14 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task RecoverWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetRecoverWorkflowTemplate(
@@ -508,6 +867,15 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task RecoverWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetRecoverWorkflowTemplate(
@@ -520,6 +888,15 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo, parameterFileName: parameterFileName));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task RecoverWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetRecoverWorkflowTemplate(
@@ -532,7 +909,22 @@ namespace InformaticaWSH
                 },
                 serviceInfo: _serviceInfo, param: param));
         }
-        public async Task RecoverWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task RecoverWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
              await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetRecoverWorkflowTemplate(
                   sessionId: sessionId,
@@ -547,6 +939,13 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task ResumeWorkflow(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetResumeWorkflowTemplate(
@@ -557,6 +956,14 @@ namespace InformaticaWSH
                },
                serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task ResumeWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetResumeWorkflowTemplate(
@@ -568,6 +975,15 @@ namespace InformaticaWSH
                },
                serviceInfo: _serviceInfo));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task ResumeWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetResumeWorkflowTemplate(
@@ -579,6 +995,15 @@ namespace InformaticaWSH
                },
                serviceInfo: _serviceInfo, parameterFileName: parameterFileName));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task ResumeWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetResumeWorkflowTemplate(
@@ -590,7 +1015,22 @@ namespace InformaticaWSH
                },
                serviceInfo: _serviceInfo, param: param));
         }
-        public async Task ResumeWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task ResumeWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetResumeWorkflowTemplate(
                  sessionId: sessionId,
@@ -605,6 +1045,13 @@ namespace InformaticaWSH
                taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task ScheduleWorkflow(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetScheduleWorkflowTemplate(
@@ -617,6 +1064,14 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task ScheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetScheduleWorkflowTemplate(
@@ -630,6 +1085,15 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task ScheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetScheduleWorkflowTemplate(
@@ -643,6 +1107,15 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo, parameterFileName:parameterFileName
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task ScheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetScheduleWorkflowTemplate(
@@ -656,7 +1129,22 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo, param: param
               ));
         }
-        public async Task ScheduleWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task ScheduleWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetScheduleWorkflowTemplate(
                  sessionId: sessionId,
@@ -671,6 +1159,13 @@ namespace InformaticaWSH
                taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task StopWorkflow(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopWorkflowTemplate(
@@ -683,6 +1178,14 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task StopWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopWorkflowTemplate(
@@ -696,6 +1199,15 @@ namespace InformaticaWSH
                serviceInfo: _serviceInfo
                ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task StopWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopWorkflowTemplate(
@@ -710,6 +1222,15 @@ namespace InformaticaWSH
               parameterFileName: parameterFileName
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task StopWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopWorkflowTemplate(
@@ -724,7 +1245,22 @@ namespace InformaticaWSH
                param: param
                ));
         }
-        public async Task StopWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task StopWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopWorkflowTemplate(
                  sessionId: sessionId,
@@ -739,6 +1275,13 @@ namespace InformaticaWSH
                taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task UncheduleWorkflow(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetUncheduleWorkflowTemplate(
@@ -751,6 +1294,14 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task UncheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetUncheduleWorkflowTemplate(
@@ -764,6 +1315,15 @@ namespace InformaticaWSH
              serviceInfo: _serviceInfo
              ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task UncheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetUncheduleWorkflowTemplate(
@@ -777,6 +1337,15 @@ namespace InformaticaWSH
              serviceInfo: _serviceInfo
              ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task UncheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetUncheduleWorkflowTemplate(
@@ -791,7 +1360,22 @@ namespace InformaticaWSH
                param: param
               ));
         }
-        public async Task UncheduleWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task UncheduleWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetUncheduleWorkflowTemplate(
                  sessionId: sessionId,
@@ -806,6 +1390,13 @@ namespace InformaticaWSH
                taskInstancePath: taskInstancePath));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <returns></returns>
         public async Task WaitTillWorkflowComplete(string sessionId, string folderName, string workflowName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillWorkflowCompleteTemplate(
@@ -818,6 +1409,14 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task WaitTillWorkflowComplete(string sessionId, string folderName, string workflowName, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillWorkflowCompleteTemplate(
@@ -831,6 +1430,15 @@ namespace InformaticaWSH
               serviceInfo: _serviceInfo
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="parameterFileName"></param>
+        /// <returns></returns>
         public async Task WaitTillWorkflowComplete(string sessionId, string folderName, string workflowName, RequestMode requestMode, string parameterFileName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillWorkflowCompleteTemplate(
@@ -845,6 +1453,15 @@ namespace InformaticaWSH
                parameterFileName: parameterFileName
               ));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task WaitTillWorkflowComplete(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillWorkflowCompleteTemplate(
@@ -857,7 +1474,22 @@ namespace InformaticaWSH
                 param: param
                ));
         }
-        public async Task WaitTillWorkflowComplete(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="attribute"></param>
+        /// <param name="key"></param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="parameterFileName"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <param name="osUser"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task WaitTillWorkflowComplete(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillWorkflowCompleteTemplate(
                  sessionId: sessionId,
@@ -874,6 +1506,14 @@ namespace InformaticaWSH
        
         #endregion
 #region TASK
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task<string> TaskDetail(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
           var result=  await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetTaskDetailTemplate(
@@ -887,6 +1527,15 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task<string> TaskDetail(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetTaskDetailTemplate(
@@ -901,6 +1550,16 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task<string> TaskDetail(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetTaskDetailTemplate(
@@ -915,7 +1574,17 @@ namespace InformaticaWSH
                 taskInstancePath: taskInstancePath));
             return result;
         }
-        public async Task<string> TaskDetail(string sessionId, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string taskInstancePath, bool isAbort)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <returns></returns>
+        public async Task<string> TaskDetail(string sessionId, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string taskInstancePath, bool isAbort)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetTaskDetailTemplate(
                 sessionId: sessionId,
@@ -927,6 +1596,14 @@ namespace InformaticaWSH
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task<string> TaskDetailEx(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetTaskDetailExTemplate(
@@ -940,6 +1617,15 @@ namespace InformaticaWSH
                    taskInstancePath: taskInstancePath));
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="workflowRunInstanceName"></param>
+        /// <returns></returns>
         public async Task<string> TaskDetailEx(string sessionId, string folderName, string workflowName, string taskInstancePath,string workflowRunInstanceName)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetTaskDetailExTemplate(
@@ -955,6 +1641,14 @@ namespace InformaticaWSH
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task StartTask(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
              await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartTaskTemplate(
@@ -967,6 +1661,15 @@ namespace InformaticaWSH
                   serviceInfo: _serviceInfo,
                   taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task StartTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartTaskTemplate(
@@ -980,6 +1683,16 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo,
                 taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task StartTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
              await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartTaskTemplate(
@@ -993,7 +1706,17 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo, param: param,
                 taskInstancePath: taskInstancePath));
         }
-        public async Task StartTask(string sessionId, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string taskInstancePath, bool isAbort)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <returns></returns>
+        public async Task StartTask(string sessionId, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo,string taskInstancePath, bool isAbort)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartTaskTemplate(
                 sessionId: sessionId,
@@ -1005,6 +1728,14 @@ namespace InformaticaWSH
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task StopTask(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopTaskTemplate(
@@ -1017,6 +1748,15 @@ namespace InformaticaWSH
                  serviceInfo: _serviceInfo,
                  taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task StopTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopTaskTemplate(
@@ -1030,6 +1770,16 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo,
                 taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task StopTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopTaskTemplate(
@@ -1043,7 +1793,17 @@ namespace InformaticaWSH
                serviceInfo: _serviceInfo, param: param,
                taskInstancePath: taskInstancePath));
         }
-        public async Task StopTask(string sessionId,  List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo,  string taskInstancePath, bool isAbort)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <returns></returns>
+        public async Task StopTask(string sessionId,  List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string taskInstancePath, bool isAbort)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStopTaskTemplate(
                 sessionId: sessionId,
@@ -1055,6 +1815,14 @@ namespace InformaticaWSH
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task WaitTillTaskComplete(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillTaskCompleteTemplate(
@@ -1067,6 +1835,15 @@ namespace InformaticaWSH
                  serviceInfo: _serviceInfo,
                  taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <returns></returns>
         public async Task WaitTillTaskComplete(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillTaskCompleteTemplate(
@@ -1080,6 +1857,16 @@ namespace InformaticaWSH
                 serviceInfo: _serviceInfo,
                 taskInstancePath: taskInstancePath));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public async Task WaitTillTaskComplete(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillTaskCompleteTemplate(
@@ -1093,7 +1880,17 @@ namespace InformaticaWSH
                serviceInfo: _serviceInfo, param: param,
                taskInstancePath: taskInstancePath));
         }
-        public async Task WaitTillTaskComplete(string sessionId, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, DIServiceInfo serviceInfo, string taskInstancePath, bool isAbort)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="param"></param>
+        /// <param name="requestMode">request mode Normal or Recovery</param>
+        /// <param name="workflowInfo"></param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="isAbort"></param>
+        /// <returns></returns>
+        public async Task WaitTillTaskComplete(string sessionId, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo,string taskInstancePath, bool isAbort)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetWaitTillTaskCompleteTemplate(
                 sessionId: sessionId,
@@ -1107,7 +1904,15 @@ namespace InformaticaWSH
 
 #endregion
 
-#region SESSION
+        #region SESSION
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task<string> SessionPerfomanceData(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             var result=  await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetSessionPerfomanceDataTemplate(
@@ -1120,6 +1925,14 @@ namespace InformaticaWSH
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task<string> SessionStatistic(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetSessionStatisticTemplate(
@@ -1132,6 +1945,14 @@ namespace InformaticaWSH
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task StartSessLogFetch(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetStartSessLogFetchTemplate(
@@ -1143,11 +1964,28 @@ namespace InformaticaWSH
                   ));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <returns></returns>
         public async Task<List<LogMessage>> GetSessionLog(string sessionId, string folderName, string workflowName, string taskInstancePath)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetSessionLogTemplate(sessionId, folderName, workflowName, taskInstancePath, _serviceInfo));
             return InfaLogParser.ParseWorkflowLogs(ValuesSoapXml.GetValueOnElement(result, "Buffer"));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="folderName">folder containing workflow</param>
+        /// <param name="workflowName">workflow name which is need</param>
+        /// <param name="taskInstancePath"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
         public async Task<List<LogMessage>> GetSessionLog(string sessionId, string folderName, string workflowName, string taskInstancePath,int timeout)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetSessionLogTemplate(sessionId, folderName, workflowName, taskInstancePath, _serviceInfo, timeout));
@@ -1156,34 +1994,84 @@ namespace InformaticaWSH
         #endregion
 
         #region SERVER
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <returns></returns>
         public async Task DeinitServerConnection(string sessionId)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetDeinitServerConnectionTemplate(sessionId));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <returns></returns>
         public async Task<string> DIServerProp(string sessionId)
         {
             string result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetDIServerPropTemplate(sessionId, _serviceInfo));
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="logHandle"></param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
         public async Task<string> NextLogSegment(string sessionId, int logHandle, int timeOut = 60)
         {
            string result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetNextLogSegmentTemplate(sessionId, logHandle, timeOut));
            return result;
         }
 
-        public async Task InitServerConnection(string sessionId, string loginHandle="", string serverName = "", string domainName = "")
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <returns></returns>
+        public async Task InitServerConnection(string sessionId)
+        {
+            await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetInitServerConnectionTemplate(sessionId));
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="loginHandle"></param>
+        /// <param name="serverName"></param>
+        /// <param name="domainName"></param>
+        /// <returns></returns>
+        public async Task InitServerConnection(string sessionId, string loginHandle, string serverName, string domainName)
         {
             await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetInitServerConnectionTemplate(sessionId,loginHandle,serverName,domainName));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         public async Task<string> MonitorDIServer(string sessionId,MonitorMode mode)
         {
             var result = await _integrationExecutor.ExecuteRequest(InformaticaWebRequestsTemplates.GetMonitorDIServerTemplate(sessionId, mode,_serviceInfo));
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionId">login sessionId</param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
         public async Task<bool> PingDIServer(string sessionId, int timeOut = 10)
         {
             string result = "";

@@ -7,67 +7,59 @@ namespace InformaticaWSH
     {
         internal static List<LogMessage> ParseWorkflowLogs(string log)
         {
-            string[] splitValues = { "INFO", "ERROR", "FATAL", "WARNING", "TRACE", "DEBUG" };
+            
 
-
-            var logArray = log.Split('\n');
-            for (int i = 0; i < logArray.Length; i++)
+            var logsArray = log.Split('\n');
+            for (int i = 0; i < logsArray.Length; i++)
             {
-                if (!string.IsNullOrEmpty(logArray[i]) && !CheckStringContainsValues(logArray[i], splitValues))
+                if (!string.IsNullOrEmpty(logsArray[i]) && !CheckStringItsOneMessage(logsArray[i]))
                 {
-                    logArray[i - 1] += logArray[i];
-                    logArray[i] = null;
+                    logsArray[i - 1] += logsArray[i];
+                    logsArray[i] = null;
                     i = 0;
                 }
+            }
 
-            }
             List<LogMessage> logModels = new List<LogMessage>();
-            foreach(string item in logArray)
-            {
-                var model = ConvertRowToMessageModel(item);
-                if (model != null)
-                    logModels.Add(model);
-            }
+            foreach (string item in logsArray)
+                if(!string.IsNullOrEmpty(item))
+                   logModels.Add(ConvertRowToMessageModel(item));
+
             return logModels;
         }
-
-        private static CultureInfo provider = CultureInfo.InvariantCulture;
         private static LogMessage ConvertRowToMessageModel(string row)
         {
-            
-            if (!string.IsNullOrEmpty(row))
-            {
-                LogMessage lmm = new LogMessage
+            return new LogMessage
                 {
                     Severity = GetRow(" :", ref row),
-                    LogTime = DateTime.ParseExact(GetRow("[", ref row).Trim(), "ddd MMM dd HH:mm:ss yyyy", provider),
+                    LogTime = DateTime.ParseExact(GetRow("[", ref row).Trim(), "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture),
                     Code = GetRow("] : ", ref row),
                     Thread = GetRow(" ", ref row),
                     Message = row
                 };
-
-                return lmm;
-            }
-            return null;
         }
 
         private static string GetRow(string indexValue,ref string row)
         {
             int index = row.IndexOf(indexValue);
             string result = row.Substring(0, index);
-            int concatindex = index + indexValue.Length;
-            row = row.Substring(concatindex);
+            int concatIndex = index + indexValue.Length;
+            row = row.Substring(concatIndex);
             return result;
         }
 
-        private static bool CheckStringContainsValues(string text,string[] splitVal)
+        private static string[] messagesStatus = { "INFO : ", "ERROR : ", "FATAL : ", "WARNING : ", "TRACE : ", "DEBUG : " };
+
+        private static bool CheckStringItsOneMessage(string text)
         {
-            for (int i = 0; i < splitVal.Length; i++)
-                if (text.Contains(splitVal[i]+ " : "))
+            if (text.Contains(messagesStatus[0]))
+                return true;
+
+            for (int i = 1; i < messagesStatus.Length; i++)
+                if (text.Contains(messagesStatus[i]))
                     return true;
             return false;
         }
-
 
     }
 }

@@ -29,9 +29,9 @@ namespace InformaticaWSH
             LogWriter.WriteLog(_logFolderPath, _instanceDT,"response", value);
         }
         /// <summary>
-        /// 
+        /// get last XML response
         /// </summary>
-        /// <returns></returns>
+        /// <returns>response xml text</returns>
         public string GetLastResponse()
         {
             return _lastResponse;
@@ -42,9 +42,9 @@ namespace InformaticaWSH
             LogWriter.WriteLog(_logFolderPath, _instanceDT, "error", value);
         }
         /// <summary>
-        /// 
+        /// get last Error response
         /// </summary>
-        /// <returns></returns>
+        /// <returns>response error xml text<</returns>
         public string GetlastErrowResponse()
         {
             return _lastErrowResponse;
@@ -55,18 +55,18 @@ namespace InformaticaWSH
              LogWriter.WriteLog(_logFolderPath,_instanceDT, "request", value);
         }
         /// <summary>
-        /// 
+        /// get last request, sended to server
         /// </summary>
-        /// <returns></returns>
+        /// <returns>request xml text</returns>
         public string GetlastRequest()
         {
             return _lastRequest;
         }
 
         /// <summary>
-        /// 
+        /// create object controller without logging
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="url">server url format as http://ip:port</param>
         /// <param name="serviceInfo">target domain and integration service</param>
         public InformaticaWebRequestController(string url,DIServiceInfo serviceInfo)
         {
@@ -75,11 +75,11 @@ namespace InformaticaWSH
             _serviceInfo = serviceInfo;
         }
         /// <summary>
-        /// 
+        /// create object controller with logging
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="url">server url format as http://ip:port</param>
         /// <param name="serviceInfo">target domain and integration service</param>
-        /// <param name="logFolderPath"></param>
+        /// <param name="logFolderPath">folder path where will be creating log files</param>
         public InformaticaWebRequestController(string url, DIServiceInfo serviceInfo, string logFolderPath)
         {
             _instanceDT = DateTime.Now.ToString().Replace('.','_').Replace(':','-').Replace(' ','_');
@@ -99,7 +99,7 @@ namespace InformaticaWSH
         }
 
         /// <summary>
-        /// 
+        /// Login to server and get sessionID
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="repository"></param>
@@ -288,7 +288,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task WorkflowDetail(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -308,14 +308,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task WorkflowDetail(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -376,7 +376,7 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <returns></returns>
         public async Task<string> WorkflowDetailEx(string sessionId, WorkflowInformParams workflowInfo)
         {
@@ -410,7 +410,7 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <returns></returns>
         public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, WorkflowInformParams workflowInfo)
         {
@@ -422,7 +422,7 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="timeout"></param>
         /// <returns></returns>
         public async Task<List<LogMessage>> GetWorkflowLog(string sessionId, WorkflowInformParams workflowInfo,int timeout)
@@ -499,7 +499,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task StartWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -519,14 +519,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task StartWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo,string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -614,7 +614,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task<int> StartWorkflowEx(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -636,13 +636,13 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
         /// <param name="workflowInfoEx"></param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task<int> StartWorkflowEx(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInforExParams workflowInfoEx, string parameterFileName, string taskInstancePath, string osUser, string reason)
         {
@@ -732,7 +732,7 @@ namespace InformaticaWSH
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task StartWorkflowFromTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
@@ -753,14 +753,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task StartWorkflowFromTask(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -819,7 +819,7 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <returns></returns>
         public async Task StartWorkflowLogFetch(string sessionId, WorkflowInformParams workflowInfo)
         {
@@ -895,7 +895,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task RecoverWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -915,14 +915,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task RecoverWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -1002,7 +1002,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task ResumeWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1021,14 +1021,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task ResumeWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -1114,7 +1114,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task ScheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1135,14 +1135,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task ScheduleWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -1229,7 +1229,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task StopWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1251,14 +1251,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task StopWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -1344,7 +1344,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task UncheduleWorkflow(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1366,14 +1366,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task UncheduleWorkflow(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -1460,7 +1460,7 @@ namespace InformaticaWSH
         /// <param name="folderName">folder containing workflow</param>
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task WaitTillWorkflowComplete(string sessionId, string folderName, string workflowName, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1480,14 +1480,14 @@ namespace InformaticaWSH
         /// <param name="sessionId">login sessionId</param>
         /// <param name="attribute"></param>
         /// <param name="key"></param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="parameterFileName"></param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <param name="osUser"></param>
-        /// <param name="reason"></param>
+        /// <param name="reason">request reason</param>
         /// <returns></returns>
         public async Task WaitTillWorkflowComplete(string sessionId, List<TaskAttribute> attribute, List<TaskKey> key, List<TaskParam> param, RequestMode requestMode, WorkflowInformParams workflowInfo, string parameterFileName, string taskInstancePath, bool isAbort, string osUser, string reason)
         {
@@ -1558,7 +1558,7 @@ namespace InformaticaWSH
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task<string> TaskDetail(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1578,9 +1578,9 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <returns></returns>
@@ -1691,7 +1691,7 @@ namespace InformaticaWSH
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task StartTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1710,9 +1710,9 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <returns></returns>
@@ -1778,7 +1778,7 @@ namespace InformaticaWSH
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task StopTask(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1797,9 +1797,9 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <returns></returns>
@@ -1865,7 +1865,7 @@ namespace InformaticaWSH
         /// <param name="workflowName">workflow name which is need</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <returns></returns>
         public async Task WaitTillTaskComplete(string sessionId, string folderName, string workflowName, string taskInstancePath, RequestMode requestMode, List<TaskParam> param)
         {
@@ -1884,9 +1884,9 @@ namespace InformaticaWSH
         /// 
         /// </summary>
         /// <param name="sessionId">login sessionId</param>
-        /// <param name="param"></param>
+        /// <param name="param">optional parameters  as sends to worklow</param>
         /// <param name="requestMode">request mode Normal or Recovery</param>
-        /// <param name="workflowInfo"></param>
+        /// <param name="workflowInfo">workflow data  need to run</param>
         /// <param name="taskInstancePath"></param>
         /// <param name="isAbort"></param>
         /// <returns></returns>

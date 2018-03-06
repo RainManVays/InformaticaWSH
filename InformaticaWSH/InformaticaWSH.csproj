@@ -43,12 +43,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LogWriter.cs" />
+    <Compile Include="RequestWorkers\InformaticaSOAPController.cs" />
+    <Compile Include="RequestWorkers\InformaticaSOAPTemplates.cs" />
+    <Compile Include="SoapObject\DIServerDetail.cs" />
     <Compile Include="SoapObject\DIServiceInfo.cs" />
     <Compile Include="InfaLogParser.cs" />
     <Compile Include="SoapObject\MonitorMode.cs" />
     <Compile Include="SoapObject\RequestMode.cs" />
-    <Compile Include="RequestWorkers\InformaticaWebRequestController.cs" />
-    <Compile Include="RequestWorkers\InformaticaWebRequestsTemplates.cs" />
     <Compile Include="SoapObject\LogMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestWorkers\ValuesSoapXml.cs" />
@@ -57,9 +58,12 @@
     <Compile Include="SoapObject\TaskItem.cs" />
     <Compile Include="SoapObject\TaskKey.cs" />
     <Compile Include="SoapObject\TaskParam.cs" />
+    <Compile Include="SoapObject\WorkflowDetail.cs" />
     <Compile Include="SoapObject\WorkflowInforExParams.cs" />
     <Compile Include="SoapObject\WorkflowInformParams.cs" />
     <Compile Include="SoapObject\WorkflowItem.cs" />
+    <Compile Include="WorkflowDetailParser.cs" />
+    <Compile Include="XmlTimeParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

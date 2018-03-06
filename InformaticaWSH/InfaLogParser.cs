@@ -7,8 +7,6 @@ namespace InformaticaWSH
     {
         internal static List<LogMessage> ParseWorkflowLogs(string log)
         {
-            
-
             var logsArray = log.Split('\n');
             for (int i = 0; i < logsArray.Length; i++)
             {
